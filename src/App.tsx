@@ -7,7 +7,7 @@ import { InstanceTopology } from "./components/InstanceTopology";
 import { useInferencePlanner } from "./hooks/useInferencePlanner";
 
 import { Alert, AlertDescription, AlertTitle } from "./components/ui/alert";
-import { Info, ChevronDown, ChevronUp, Copy, Check, Download } from "lucide-react";
+import { Info, ChevronDown, ChevronUp, Copy, Check, Download, Github, Map } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -32,6 +32,7 @@ function App() {
 
   const [isDisclaimerOpen, setIsDisclaimerOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [exportData, setExportData] = useState("");
   const [copied, setCopied] = useState(false);
 
@@ -68,7 +69,7 @@ function App() {
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-300 font-mono p-4 md:p-8 selection:bg-rose-900 selection:text-white">
       <div className="max-w-7xl mx-auto space-y-8">
-        <Header onExport={handleExport} />
+        <Header onExport={handleExport} onAbout={() => setIsAboutOpen(true)} />
 
         <Alert className="border-rose-900/50 bg-rose-950/10 transition-all duration-200">
           <div className="flex items-center justify-between cursor-pointer" onClick={() => setIsDisclaimerOpen(!isDisclaimerOpen)}>
@@ -116,6 +117,50 @@ function App() {
               </Button>
               <Button onClick={downloadJson} className="bg-rose-600 hover:bg-rose-700 text-white gap-2">
                 <Download className="h-4 w-4" /> Download JSON
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={isAboutOpen} onOpenChange={setIsAboutOpen}>
+          <DialogContent className="max-w-2xl bg-neutral-950 border-neutral-800 text-neutral-200">
+            <DialogHeader>
+              <DialogTitle className="text-rose-500 flex items-center gap-2"><Info className="w-5 h-5" /> About Project</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="p-4 bg-neutral-900/50 rounded-lg border border-neutral-800">
+                <h4 className="font-semibold text-rose-400 mb-2 flex items-center gap-2">
+                  <Github className="w-4 h-4" /> Open Source
+                </h4>
+                <p className="text-sm text-neutral-400">
+                  This project is open source and available on GitHub. Contributions, bug reports, and feature requests are welcome.
+                </p>
+                <div className="mt-3">
+                  <a href="https://github.com/Sachinkry/inference-cost-calc" target="_blank" rel="noopener noreferrer">
+                    <Button variant="outline" size="sm" className="border-neutral-700 bg-black hover:bg-neutral-800 text-neutral-300 hover:text-rose-400">
+                      <Github className="w-4 h-4 mr-2" /> View Repository
+                    </Button>
+                  </a>
+                </div>
+              </div>
+
+              <div className="p-4 bg-neutral-900/50 rounded-lg border border-neutral-800">
+                <h4 className="font-semibold text-rose-400 mb-2 flex items-center gap-2">
+                  <Map className="w-4 h-4" /> Roadmap
+                </h4>
+                <ul className="list-disc list-inside text-sm text-neutral-400 space-y-1">
+                  <li><span className="text-green-500">✓</span> <strong>Physics-Based Kernels</strong>: Accurate VRAM & Compute estimation using model architecture.</li>
+                  <li><span className="text-green-500">✓</span> <strong>Throughput Modeling</strong>: Bandwidth vs Compute constraints on H100/A100.</li>
+                  <li><span className="text-green-500">✓</span> <strong>KV Cache</strong>: Simulation of GQA and PagedAttention overheads.</li>
+                  <li><span className="text-neutral-500">○</span> <strong>Distributed Training</strong>: Cost modeling for Pre-training, SFT, and RLHF.</li>
+                  <li><span className="text-neutral-500">○</span> <strong>Custom Hardware</strong>: Support for TPU v5, MI300X, and custom clusters.</li>
+                  <li><span className="text-neutral-500">○</span> <strong>TCO Analysis</strong>: Power, cooling, and networking cost calculators.</li>
+                </ul>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button onClick={() => setIsAboutOpen(false)} className="bg-neutral-800 hover:bg-neutral-700 text-white">
+                Close
               </Button>
             </DialogFooter>
           </DialogContent>

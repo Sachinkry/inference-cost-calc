@@ -1,11 +1,12 @@
-import { Terminal, Download } from 'lucide-react';
+import { Terminal, Download, HelpCircle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
 interface HeaderProps {
     onExport: () => void;
+    onAbout: () => void;
 }
 
-export function Header({ onExport }: HeaderProps) {
+export function Header({ onExport, onAbout }: HeaderProps) {
     return (
         <header className="border-b-2 border-rose-600 pb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 overflow-hidden">
             <div>
@@ -16,6 +17,14 @@ export function Header({ onExport }: HeaderProps) {
                 <p className="text-neutral-500 mt-2 opacity-80">Infrastructure Cost Calculator</p>
             </div>
             <div className="flex items-center gap-4">
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={onAbout}
+                    className="flex items-center gap-2 border-neutral-700 bg-black hover:bg-neutral-800 text-neutral-400"
+                >
+                    <HelpCircle className="w-4 h-4" /> About
+                </Button>
                 <Button
                     variant="outline"
                     size="sm"
