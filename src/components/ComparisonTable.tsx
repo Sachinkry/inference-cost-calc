@@ -10,7 +10,7 @@ interface ComparisonTableProps {
 
 export function ComparisonTable({ current, baseline }: ComparisonTableProps) {
     return (
-        <div className="bg-neutral-900/80 border border-neutral-700 rounded-lg mb-6 overflow-hidden backdrop-blur-sm">
+        <div className="bg-gradient-to-br from-neutral-900 to-black border border-neutral-700 rounded-lg mb-6 overflow-hidden shadow-lg">
             <div className="flex items-center justify-between p-6 pb-4 border-b border-neutral-800">
                 <h3 className="text-lg font-bold text-neutral-300 flex items-center gap-2">
                     <SplitSquareHorizontal className="w-5 h-5 text-neutral-500" /> Comparison
@@ -39,17 +39,14 @@ export function ComparisonTable({ current, baseline }: ComparisonTableProps) {
                         { label: "Throughput", base: baseline.totalTpsDemand, curr: current.totalTpsDemand, format: formatNum, unit: " T/s" },
                     ].map((row, i) => {
                         const diff = row.curr - row.base;
-                        const isInfra = ["Total GPUs", "Monthly Cost"].includes(row.label);
-                        const isPerf = ["Cost / 1M Out", "Throughput"].includes(row.label);
-                        const color = diff === 0 ? "text-neutral-500" : (isPerf ? "text-blue-400" : "text-rose-400");
+                        const color = diff > 0 ? "text-rose-500" : "text-neutral-600";
 
-                        const labelColor = isPerf ? "text-blue-400" : isInfra ? "text-rose-300" : "text-neutral-500";
 
                         return (
                             <TableRow key={i} className="border-t border-neutral-800 hover:bg-neutral-800/50 transition-colors">
-                                <TableCell className={`${labelColor} font-mono text-xs font-medium`}>{row.label}</TableCell>
-                                <TableCell className="text-neutral-500 font-mono text-xs">{row.format(row.base)}{row.unit}</TableCell>
-                                <TableCell className="text-white font-bold font-mono text-xs">{row.format(row.curr)}{row.unit}</TableCell>
+                                <TableCell className="text-neutral-500 font-mono text-xs font-medium">{row.label}</TableCell>
+                                <TableCell className="text-neutral-600 font-mono text-xs">{row.format(row.base)}{row.unit}</TableCell>
+                                <TableCell className="text-neutral-300 font-bold font-mono text-xs">{row.format(row.curr)}{row.unit}</TableCell>
                                 <TableCell className={`text-right font-mono text-xs ${color}`}>
                                     {diff > 0 ? "+" : ""}{row.label.includes("Cost") ? row.format(diff) : formatNum(diff)}
                                 </TableCell>

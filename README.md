@@ -32,6 +32,7 @@
 - [x] **Physics-Based Kernels**: Accurate VRAM & Compute estimation using model architecture.
 - [x] **Throughput Modeling**: Bandwidth vs Compute constraints on H100/A100.
 - [x] **KV Cache**: Simulation of GQA and PagedAttention overheads.
+- [ ] **HF Model Inference**: Direct inference cost estimation from Hugging Face model IDs.
 - [ ] **Distributed Training**: Cost modeling for Pre-training, SFT, and RLHF.
 - [ ] **Custom Hardware**: Support for TPU v5, MI300X, and custom clusters.
 - [ ] **TCO Analysis**: Power, cooling, and networking cost calculators.

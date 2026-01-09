@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Header } from "./components/Header";
 import { ConfigPanel } from "./components/ConfigPanel";
 import { KpiCards } from "./components/KpiCards";
 import { ComparisonTable } from "./components/ComparisonTable";
 import { InstanceTopology } from "./components/InstanceTopology";
+import { MemoryAnalysis } from "./components/MemoryAnalysis";
+import { MethodologyNotes } from "./components/MethodologyNotes";
 import { useInferencePlanner } from "./hooks/useInferencePlanner";
 
-import { Alert, AlertDescription, AlertTitle } from "./components/ui/alert";
-import { Info, ChevronDown, ChevronUp, Copy, Check, Download, Github, Map } from "lucide-react";
+import { Info, Copy, Check, Download, Github, Map } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -31,11 +32,24 @@ function App() {
     baselineMetrics
   } = useInferencePlanner();
 
-  const [isDisclaimerOpen, setIsDisclaimerOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [exportData, setExportData] = useState("");
   const [copied, setCopied] = useState(false);
+  const [isCalculating, setIsCalculating] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const onCalculateWrapper = () => {
+    // Scroll to the content area (just below header)
+    scrollRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    setIsCalculating(true);
+    // Add artificial delay for visual feedback
+    setTimeout(() => {
+      handleCalculate();
+      setIsCalculating(false);
+    }, 600);
+  };
 
   const handleExport = () => {
     const data = {
@@ -51,45 +65,32 @@ function App() {
     setIsExportOpen(true);
   };
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(exportData);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(exportData);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
   };
 
   const downloadJson = () => {
-    const blob = new Blob([exportData], { type: 'application/json' });
+    const blob = new Blob([exportData], { type: "application/json" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `netrunner_v5_1.json`;
+    a.download = `inference-config-${new Date().toISOString().split("T")[0]}.json`;
+    document.body.appendChild(a);
     a.click();
-    setIsExportOpen(false);
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-300 font-mono p-4 md:p-8 selection:bg-rose-900 selection:text-white">
       <div className="max-w-7xl mx-auto space-y-8">
         <Header onExport={handleExport} onAbout={() => setIsAboutOpen(true)} />
-
-        <Alert className="border-rose-900/50 bg-rose-950/10 transition-all duration-200">
-          <div className="flex items-center justify-between cursor-pointer" onClick={() => setIsDisclaimerOpen(!isDisclaimerOpen)}>
-            <div className="flex items-center gap-2">
-              <Info className="h-4 w-4 text-rose-500" />
-              <AlertTitle className="text-rose-500 mb-0">Note</AlertTitle>
-            </div>
-            {isDisclaimerOpen ? (
-              <ChevronUp className="h-4 w-4 text-rose-500" />
-            ) : (
-              <ChevronDown className="h-4 w-4 text-rose-500" />
-            )}
-          </div>
-          {isDisclaimerOpen && (
-            <AlertDescription className="text-neutral-400 mt-2">
-              Results are based on theoretical hardware specs and model architecture math. Real-world performance may vary due to quantization kernels, server overhead, and specific cloud pricing. Use as a baseline planning tool.
-            </AlertDescription>
-          )}
-        </Alert>
 
         <Dialog open={isExportOpen} onOpenChange={setIsExportOpen}>
           <DialogContent className="max-w-2xl bg-neutral-950 border-neutral-800 text-neutral-200">
@@ -153,6 +154,7 @@ function App() {
                   <li><span className="text-green-500">✓</span> <strong>Physics-Based Kernels</strong>: Accurate VRAM & Compute estimation using model architecture.</li>
                   <li><span className="text-green-500">✓</span> <strong>Throughput Modeling</strong>: Bandwidth vs Compute constraints on H100/A100.</li>
                   <li><span className="text-green-500">✓</span> <strong>KV Cache</strong>: Simulation of GQA and PagedAttention overheads.</li>
+                  <li><span className="text-neutral-500">○</span> <strong>HF Model Inference</strong>: Direct inference cost estimation from Hugging Face model IDs.</li>
                   <li><span className="text-neutral-500">○</span> <strong>Distributed Training</strong>: Cost modeling for Pre-training, SFT, and RLHF.</li>
                   <li><span className="text-neutral-500">○</span> <strong>Custom Hardware</strong>: Support for TPU v5, MI300X, and custom clusters.</li>
                   <li><span className="text-neutral-500">○</span> <strong>TCO Analysis</strong>: Power, cooling, and networking cost calculators.</li>
@@ -167,14 +169,14 @@ function App() {
           </DialogContent>
         </Dialog>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div ref={scrollRef} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Controls Column (GRAY/NEUTRAL) */}
           <div className="lg:col-span-4 space-y-6">
             <ConfigPanel
               config={config}
               metrics={metrics}
               updateConfig={updateConfig}
-              onCalculate={handleCalculate}
+              onCalculate={onCalculateWrapper}
               isStale={isStale}
               comparisonMode={comparisonMode}
               onToggleComparison={toggleComparison}
@@ -190,7 +192,15 @@ function App() {
 
             <KpiCards metrics={metrics} />
 
-            <InstanceTopology metrics={metrics} config={config} />
+            <InstanceTopology metrics={metrics} config={config} isCalculating={isCalculating} />
+
+            {metrics && (
+              <MemoryAnalysis metrics={metrics} config={config} isCalculating={isCalculating} />
+            )}
+
+            {metrics && (
+              <MethodologyNotes metrics={metrics} config={config} />
+            )}
           </div>
         </div>
       </div>

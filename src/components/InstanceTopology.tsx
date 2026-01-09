@@ -1,5 +1,5 @@
-import { Layers, HelpCircle, ChevronUp, ChevronDown } from 'lucide-react';
-import { useState } from 'react';
+import { Layers, Info } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Metrics, AppConfig } from "../types";
 import { Hardware } from "../data/hardware";
 import { formatNum } from "../utils/format";
@@ -7,10 +7,10 @@ import { formatNum } from "../utils/format";
 interface InstanceTopologyProps {
     metrics: Metrics | null;
     config: AppConfig;
+    isCalculating?: boolean;
 }
 
-export function InstanceTopology({ metrics, config }: InstanceTopologyProps) {
-    const [showAssumptions, setShowAssumptions] = useState(false);
+export function InstanceTopology({ metrics, config, isCalculating }: InstanceTopologyProps) {
 
     if (!metrics) return null;
 
@@ -20,10 +20,22 @@ export function InstanceTopology({ metrics, config }: InstanceTopologyProps) {
 
     return (
         <>
-            <div className="bg-neutral-900 border border-neutral-800 p-6 rounded-lg">
-                <div className="flex items-center gap-2 mb-6 text-rose-500 border-b border-neutral-800 pb-2">
-                    <Layers className="w-5 h-5" />
+            <div className={`bg-gradient-to-br from-neutral-900 to-black border border-neutral-800 p-6 rounded-lg shadow-lg transition-opacity duration-300 ${isCalculating ? 'opacity-80' : 'opacity-100'}`}>
+                <div className="flex items-center gap-2 mb-6 text-neutral-300 border-b border-neutral-800 pb-2">
+                    <Layers className="w-5 h-5 text-neutral-500" />
                     <h2 className="text-xl font-bold">Instance Topology (Replica)</h2>
+                    <Popover>
+                        <PopoverTrigger>
+                            <Info className="w-4 h-4 text-neutral-500 hover:text-neutral-300 cursor-pointer ml-1" />
+                        </PopoverTrigger>
+                        <PopoverContent className="w-64 bg-neutral-900 border-neutral-800 text-neutral-300 p-3">
+                            <div className="space-y-2 text-xs">
+                                <p><span className="font-bold text-rose-400">Replica Topology:</span></p>
+                                <p>A self-contained unit of GPUs (e.g., 4x or 8x) that holds one full copy of the model weights and can serve a batch of users independently.</p>
+                                <p className="text-neutral-500 italic">More users → More replicas needed.</p>
+                            </div>
+                        </PopoverContent>
+                    </Popover>
                 </div>
 
                 <div className="space-y-8">
@@ -36,17 +48,18 @@ export function InstanceTopology({ metrics, config }: InstanceTopologyProps) {
                         <div className="relative h-12 bg-black rounded overflow-hidden border border-neutral-800 flex">
                             {/* Weights (Static/Gray) */}
                             <div
-                                className="h-full bg-neutral-700 border-r border-black/50 relative group flex items-center justify-center"
-                                style={{ width: `${weightsPct}%` }}
+                                className={`h-full bg-neutral-700 border-r border-black/50 relative group flex items-center justify-center transition-all duration-500 ease-out ${isCalculating ? 'w-[5%] animate-pulse' : ''}`}
+                                style={{ width: isCalculating ? '20%' : `${weightsPct}%` }}
                             >
-                                <span className="text-[10px] text-white font-bold drop-shadow-md whitespace-nowrap px-1 overflow-hidden">Weights</span>
+                                {!isCalculating && <span className="text-[10px] text-white font-bold drop-shadow-md whitespace-nowrap px-1 overflow-hidden">Weights</span>}
                             </div>
-                            {/* KV Cache Space (Dynamic/Pink) */}
+                            {/* KV Cache Space (Dynamic/Neutral) */}
                             <div
-                                className="h-full bg-rose-900/40 relative group flex items-center justify-center"
-                                style={{ width: `${kvPct}%` }}
+                                className={`h-full bg-neutral-800 relative group flex items-center justify-center transition-all duration-500 ease-out ${isCalculating ? 'animate-pulse bg-neutral-900' : ''}`}
+                                style={{ width: isCalculating ? '80%' : `${kvPct}%` }}
                             >
-                                <span className="text-[10px] text-rose-500/70 font-bold whitespace-nowrap px-1 overflow-hidden">Available for KV Cache</span>
+                                {!isCalculating && <span className="text-[10px] text-neutral-500 font-bold whitespace-nowrap px-1 overflow-hidden">Available for KV Cache</span>}
+                                {isCalculating && <span className="text-[10px] text-neutral-600 font-bold animate-pulse">Calculating...</span>}
                             </div>
                         </div>
                         <div className="flex justify-between text-[10px] text-neutral-600 mt-2">
@@ -55,31 +68,6 @@ export function InstanceTopology({ metrics, config }: InstanceTopologyProps) {
                         </div>
                     </div>
                 </div>
-            </div>
-
-            {/* Assumptions */}
-            <div className="border border-neutral-800 rounded bg-black/20 overflow-hidden mt-6">
-                <button
-                    onClick={() => setShowAssumptions(!showAssumptions)}
-                    className="w-full flex items-center justify-between p-3 text-xs text-neutral-500 hover:bg-neutral-900 transition-colors"
-                >
-                    <span className="flex items-center gap-2"><HelpCircle className="w-3 h-3" /> Physics & Data Sources</span>
-                    {showAssumptions ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                </button>
-
-                {showAssumptions && (
-                    <div className="p-4 text-[11px] text-neutral-400 leading-relaxed space-y-2 bg-black/40 border-t border-neutral-800">
-                        <p><strong>Assumptions Applied to Your Config:</strong></p>
-                        <ul className="list-disc pl-4 space-y-1 mb-2 text-neutral-500">
-                            <li>KV Cache: {config.pagedAttention ? "PAGED" : "FULL CONTEXT"} (~{Math.round(metrics.kvPerUserGB * 1000)} MB/user)</li>
-                            <li>Batch Size: {config.batchSize} (latency penalty: {Math.round((1 - metrics.latencyPenalty) * 100)}%)</li>
-                            <li>Quantization Speedup: {metrics.quantMult.toFixed(2)}x (batch-adjusted)</li>
-                            <li>Tensor Parallelism: {metrics.recommendedTP}x (across {metrics.minGpusPerInstance / metrics.recommendedTP} replicas)</li>
-                            <li>Active Decoders: ~{Math.round(config.concurrentUsers * config.activeDecodeFraction)} of {config.concurrentUsers} users</li>
-                        </ul>
-                        <p><strong>Throughput Data Source:</strong> Interpolated from {Hardware[config.hardware].type.toUpperCase()} benchmarks at Batch 1, 8, 32, 128.</p>
-                    </div>
-                )}
             </div>
         </>
     );

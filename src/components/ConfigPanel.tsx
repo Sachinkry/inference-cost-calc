@@ -1,4 +1,4 @@
-import { RefreshCw, Calculator, SplitSquareHorizontal, AlertTriangle, Clock, Info } from 'lucide-react';
+import { Settings2, Calculator, SplitSquareHorizontal, AlertTriangle, Clock, Info } from 'lucide-react';
 import { AppConfig, Metrics } from '../types';
 import { Models } from '../data/models';
 import { Hardware } from '../data/hardware';
@@ -38,8 +38,19 @@ export function ConfigPanel({
         <div className="bg-neutral-900 border border-neutral-800 p-6 rounded-lg shadow-lg">
             <div className="flex items-center justify-between mb-6 text-neutral-300 border-b border-neutral-800 pb-2">
                 <div className="flex items-center gap-2">
-                    <RefreshCw className="w-5 h-5 text-neutral-400" />
-                    <h2 className="text-xl font-bold">Parameters</h2>
+                    <Settings2 className="w-5 h-5 text-neutral-400" />
+                    <h2 className="text-xl font-bold">Configuration</h2>
+                    <Popover>
+                        <PopoverTrigger>
+                            <Info className="w-4 h-4 text-neutral-500 hover:text-neutral-300 cursor-pointer ml-1" />
+                        </PopoverTrigger>
+                        <PopoverContent className="w-80 bg-neutral-900 border-neutral-800 text-neutral-300 p-3">
+                            <div className="space-y-2 text-xs">
+                                <p><span className="font-bold text-rose-400">Baseline Estimation:</span> Results are based on theoretical hardware specs and model architecture math.</p>
+                                <p className="text-neutral-500">Real-world performance may vary due to quantization kernels, server overhead, and specific cloud pricing. Use as a baseline planning tool.</p>
+                            </div>
+                        </PopoverContent>
+                    </Popover>
                 </div>
                 {comparisonMode && (
                     <Badge variant="outline" className="text-xs bg-rose-900/40 text-rose-400 border-rose-900/50">
@@ -201,7 +212,20 @@ export function ConfigPanel({
                             checked={config.pagedAttention}
                             onCheckedChange={(checked) => updateConfig('pagedAttention', checked)}
                         />
-                        <Label className="text-xs text-neutral-500">Use Paged Attention (vLLM)</Label>
+                        <div className="flex items-center gap-2">
+                            <Label className="text-xs text-neutral-500">Use Paged Attention (vLLM)</Label>
+                            <Popover>
+                                <PopoverTrigger>
+                                    <Info className="w-3 h-3 text-neutral-500 hover:text-neutral-300 cursor-pointer" />
+                                </PopoverTrigger>
+                                <PopoverContent className="w-64 bg-neutral-900 border-neutral-800 text-neutral-300 p-3">
+                                    <div className="space-y-2 text-xs">
+                                        <p><span className="font-bold text-rose-400">Paged Attention:</span> Manages KV cache in non-contiguous blocks (like OS paging).</p>
+                                        <p className="text-neutral-500">Significantly reduces memory fragmentation (overhead), allowing <span className="text-neutral-300">more tokens to fit</span> in VRAM.</p>
+                                    </div>
+                                </PopoverContent>
+                            </Popover>
+                        </div>
                     </div>
                 </div>
 
@@ -237,19 +261,19 @@ export function ConfigPanel({
             {metrics && (
                 <div className="space-y-4 mt-6 pt-6 border-t border-neutral-800">
                     {(metrics.gpusForMem > metrics.gpusForCompute) && (
-                        <Alert variant="destructive" className="bg-red-950/20 border-red-900/50 text-red-200">
-                            <AlertTriangle className="h-4 w-4" />
-                            <AlertTitle>Memory Bound</AlertTitle>
-                            <AlertDescription>
+                        <Alert variant="default" className="bg-neutral-900/50 border-neutral-800">
+                            <AlertTriangle className="h-4 w-4 !text-rose-500/40" />
+                            <AlertTitle className="text-neutral-400 font-bold mb-1">Memory Bound</AlertTitle>
+                            <AlertDescription className="text-neutral-500 text-xs">
                                 Limited by VRAM. {metrics.instancesNeededForMem} replicas needed.
                             </AlertDescription>
                         </Alert>
                     )}
                     {config.batchSize > 16 && config.latencyClass === "interactive" && (
-                        <Alert variant="destructive" className="bg-rose-950/20 border-rose-900/50 text-rose-200">
-                            <Clock className="h-4 w-4" />
-                            <AlertTitle>High Latency Risk</AlertTitle>
-                            <AlertDescription>
+                        <Alert variant="default" className="bg-neutral-900/50 border-neutral-800">
+                            <Clock className="h-4 w-4 !text-rose-500/40" />
+                            <AlertTitle className="text-neutral-400 font-bold mb-1">High Latency Risk</AlertTitle>
+                            <AlertDescription className="text-neutral-500 text-xs">
                                 Batch {config.batchSize} is high for Interactive. Est {Math.round(metrics.estLatency)}ms+ latency.
                             </AlertDescription>
                         </Alert>
