@@ -1,4 +1,4 @@
-import { Terminal, Download, HelpCircle } from 'lucide-react';
+import { Download, HelpCircle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
 interface HeaderProps {
@@ -11,7 +11,7 @@ export function Header({ onExport, onAbout }: HeaderProps) {
         <header className="border-b-2 border-rose-600 pb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 overflow-hidden">
             <div>
                 <h1 className="text-4xl md:text-5xl font-bold tracking-tighter text-rose-500 flex items-center gap-3">
-                    <Terminal className="w-10 h-10 md:w-12 md:h-12 animate-pulse" />
+                    <img src="/logo.svg" alt="Logo" className="w-10 h-10 md:w-12 md:h-12 text-rose-500" />
                     INFERENCE_COST_CALC <span className="text-sm bg-rose-900/40 text-rose-400 px-2 py-1 rounded">V1</span>
                 </h1>
                 <p className="text-neutral-500 mt-2 opacity-80">Infrastructure Cost Calculator</p>

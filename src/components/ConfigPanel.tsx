@@ -209,9 +209,9 @@ export function ConfigPanel({
                 <Button
                     size="lg"
                     onClick={onCalculate}
-                    className={`w-full font-bold gap-2 transition-all shadow-[0_0_20px_rgba(225,29,72,0.1)] ${isStale
-                        ? 'bg-rose-600 hover:bg-rose-700 text-white animate-pulse border-rose-500'
-                        : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-400 border-neutral-700'
+                    className={`w-full font-bold gap-2 transition-all shadow-md ${isStale
+                        ? 'bg-rose-600 hover:bg-rose-700 text-white animate-pulse border-rose-500 shadow-[0_0_20px_rgba(225,29,72,0.3)]'
+                        : 'bg-neutral-200 hover:bg-white text-neutral-900 border-neutral-200'
                         }`}
                 >
                     <Calculator className="w-5 h-5" />
@@ -220,12 +220,12 @@ export function ConfigPanel({
 
                 {/* Comparison Action */}
                 <Button
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
                     onClick={onToggleComparison}
-                    className={`w-full gap-2 text-xs ${comparisonMode
-                        ? 'bg-neutral-800/50 text-neutral-300'
-                        : 'text-neutral-500 hover:text-neutral-300'
+                    className={`w-full gap-2 text-xs border-dashed border-neutral-600 uppercase tracking-wider ${comparisonMode
+                        ? 'bg-rose-950/30 text-rose-400 border-rose-800 border-solid'
+                        : 'bg-transparent text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800 hover:border-neutral-500'
                         }`}
                 >
                     <SplitSquareHorizontal className="w-4 h-4" />

@@ -1,0 +1,23 @@
+<svg
+  width="256"
+  height="256"
+  viewBox="0 0 256 256"
+  xmlns="http://www.w3.org/2000/svg"
+  fill="none"
+  stroke="#f43f5e"
+  stroke-width="12"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <!-- Compute / infrastructure layers -->
+  <rect x="40" y="52" width="176" height="28" rx="8" />
+  <rect x="40" y="114" width="176" height="28" rx="8" />
+  <rect x="40" y="176" width="176" height="28" rx="8" />
+
+  <!-- Token / unit of inference -->
+  <circle cx="128" cy="128" r="28" fill="none" />
+
+  <!-- Accounting / balance lines -->
+  <line x1="128" y1="80" x2="128" y2="100" />
+  <line x1="128" y1="156" x2="128" y2="176" />
+</svg>
