@@ -3,7 +3,6 @@ import { Header } from "./components/Header";
 import { ConfigPanel } from "./components/ConfigPanel";
 import { KpiCards } from "./components/KpiCards";
 import { ComparisonTable } from "./components/ComparisonTable";
-import { InstanceTopology } from "./components/InstanceTopology";
 import { MemoryAnalysis } from "./components/MemoryAnalysis";
 import { MethodologyNotes } from "./components/MethodologyNotes";
 import { useInferencePlanner } from "./hooks/useInferencePlanner";
@@ -191,8 +190,6 @@ function App() {
             )}
 
             <KpiCards metrics={metrics} />
-
-            <InstanceTopology metrics={metrics} config={config} isCalculating={isCalculating} />
 
             {metrics && (
               <MemoryAnalysis metrics={metrics} config={config} isCalculating={isCalculating} />

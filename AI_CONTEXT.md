@@ -20,7 +20,6 @@
     - `useInferencePlanner.ts`: **The Brain**. Contains `calculateMetrics()`. All math for VRAM/Throughput/Cost happens here. State management (`config`, `metrics`) is also here.
 - **`src/components/`**: UI.
     - `ConfigPanel.tsx`: Main form (Inputs, Sliders).
-    - `InstanceTopology.tsx`: Visual representation of the cluster (GPUs/Nodes).
     - `KpiCards.tsx`: High-level summary stats (Cost, T/s).
     - `ui/`: Shadcn UI primitives.
 

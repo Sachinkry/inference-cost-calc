@@ -1,4 +1,6 @@
 import { useMemo } from 'react';
+import { Info } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Metrics, AppConfig } from '../types';
 import { formatNum } from '../utils/format';
 import { Hardware } from '../data/hardware';
@@ -35,8 +37,19 @@ export function MemoryAnalysis({ metrics, config, isCalculating }: MemoryAnalysi
         <div className={`border border-rose-900/30 rounded-lg overflow-hidden font-mono text-sm bg-gradient-to-br from-rose-950/30 to-black shadow-lg transition-opacity duration-300 ${isCalculating ? 'opacity-80' : 'opacity-100'}`}>
             {/* Header */}
             <div className="bg-transparent border-b border-rose-900/30 p-3 flex justify-between items-center px-4">
-                <div className="text-rose-400 font-bold tracking-widest uppercase text-xs">
+                <div className="text-rose-400 font-bold tracking-widest uppercase text-xs flex items-center gap-2">
                     Inference Memory Estimate
+                    <Popover>
+                        <PopoverTrigger>
+                            <Info className="w-3 h-3 text-rose-500/50 hover:text-rose-400 cursor-pointer" />
+                        </PopoverTrigger>
+                        <PopoverContent className="w-64 bg-black border border-rose-900/50 text-rose-100 p-3">
+                            <div className="space-y-2 text-xs">
+                                <p><span className="font-bold text-rose-400">Total Cluster Memory:</span> This view shows the aggregate VRAM usage across <span className="text-rose-300">all {metrics.requiredGpus} GPUs</span> in the cluster.</p>
+                                <p className="text-rose-400/70">It accounts for all model replicas required to serve the target concurrent users.</p>
+                            </div>
+                        </PopoverContent>
+                    </Popover>
                 </div>
                 <div className="text-[10px] text-rose-500/50 uppercase tracking-widest">
                     {metrics.requiredGpus}x {config.hardware.split('(')[0]}
