@@ -27,23 +27,14 @@
 - **Mixtral** (8x7B)
 - **Falcon** (180B)
 
-## 💻 Tech Stack
-- **Framework**: React 19 + Vite
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **Components**: Shadcn UI (Radix Primitives)
-- **Icons**: Lucide React
-
 ## 🗺️ Roadmap
 
-- [x] **Core Engine**: Memory & Compute calculations.
-- [x] **UI Overhaul**: Netrunner V5.1 Theme.
-- [x] **Data Update**: Qwen 3 Model Family.
-- [x] **IO**: Import/Export Scenarios.
-- [ ] **Backend Integration**: Save/Load from cloud database.
-- [ ] **Custom Models**: UI for defining custom architectures.
-- [ ] **Cluster Config**: Multi-node topology visualization.
-- [ ] **Training Costs**: Modules for Pre-training, Post-training, Fine-tuning, RLHF, and RL training.
+- [x] **Physics-Based Kernels**: Accurate VRAM & Compute estimation using model architecture.
+- [x] **Throughput Modeling**: Bandwidth vs Compute constraints on H100/A100.
+- [x] **KV Cache**: Simulation of GQA and PagedAttention overheads.
+- [ ] **Distributed Training**: Cost modeling for Pre-training, SFT, and RLHF.
+- [ ] **Custom Hardware**: Support for TPU v5, MI300X, and custom clusters.
+- [ ] **TCO Analysis**: Power, cooling, and networking cost calculators.
 
 ## 🏁 Quick Start
 
@@ -59,6 +50,13 @@
     ```bash
     npm run dev
     ```
+
+## 💻 Tech Stack
+- **Framework**: React 19 + Vite
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Components**: Shadcn UI (Radix Primitives)
+- **Icons**: Lucide React
 
 ## 🤝 Contributing
 
