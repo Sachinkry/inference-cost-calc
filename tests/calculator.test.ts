@@ -59,7 +59,7 @@ describe('calculateInferenceMetrics', () => {
     });
 
     it('scales costs accurately', () => {
-        const singleGpuCost = calculateInferenceMetrics(BASE_CONFIG).hourlyCost;
+
         // Force 2 GPUs by picking a huge model or just mocking hardware cost scaling?
         // Let's just check that if we double users and trigger more instances, cost goes up.
 
